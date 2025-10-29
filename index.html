@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Psychopařba - vstupenky</title>
+  <title>Psychopařba – vstupenky online</title>
   <style>
     :root{
       --bg:#000;
@@ -84,7 +84,7 @@
 
 <script>
 const TICKET_PRICE = 200;
-const IBAN = 'CZ8255000000008346955003'; // 8346955003/5500
+const IBAN = 'CZ2355000000008346955003'; // 8346955003/5500
 const VARIABLE_SYMBOL = '2025';
 const CURRENCY = 'CZK';
 
@@ -131,8 +131,8 @@ function render(){
   const qty = qtyEl.value;
   const name = nameEl.value.trim();
   const amount = amountCZK(qty);
-  const msg = msgForReceiver(qty); // pro příjemce Psychopařba
-  const note = msgText(name, qty); // v QR zůstane jméno
+  const msg = msgForReceiver(qty); // pro příjemce
+  const note = msgText(name, qty); // poznámka s jménem
   const spd = buildSPD({ iban: IBAN, amount, vs: VARIABLE_SYMBOL, msg: msg });
 
   sumEl.textContent = (Number(amount)).toLocaleString('cs-CZ', { maximumFractionDigits: 0 });
