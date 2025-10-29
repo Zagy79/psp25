@@ -10,14 +10,13 @@
     }
     *{box-sizing:border-box}
     html, body{margin:0; padding:0; background:var(--bg); color:var(--txt); font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-    a{color:inherit}
+    a{color:inherit;text-decoration:none}
 
-    /* Sekce 1 – plakát přes celou obrazovku */
+    /* SEKCE 1 – plakát přes celou obrazovku */
     .hero{
       min-height:100svh;
       display:grid; place-items:center;
       background:#000;
-      padding:0;
     }
     .hero img{
       display:block;
@@ -26,7 +25,7 @@
       border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,.5);
     }
 
-    /* Sekce 2 – ceník + výběr počtu */
+    /* SEKCE 2 – cena + výběr počtu */
     .panel{
       padding:28px 16px; display:grid; place-items:center;
       background: radial-gradient(1200px 700px at 70% -10%, #1a2238 0%, var(--bg) 50%);
@@ -39,12 +38,9 @@
       border-radius:18px; padding:18px;
       box-shadow:0 20px 50px rgba(0,0,0,.35);
     }
-    .row{display:grid; gap:14px}
-    @media (min-width:860px){ .row{grid-template-columns:1fr 1fr} }
-
     h1{margin:6px 0 8px; font-size:clamp(22px,2.4vw,30px)}
     p.lead{margin:0 0 10px; color:var(--muted)}
-    label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
+    label{display:block; font-size:14px; color:var(--muted); margin-bottom:6px}
     select{
       width:100%; padding:12px 14px; border-radius:12px;
       background:#0f1118; color:var(--txt); border:1px solid rgba(255,255,255,.12);
@@ -53,13 +49,13 @@
     .total{
       display:flex; align-items:center; justify-content:space-between;
       background:#0f1118; border:1px solid rgba(255,255,255,.12);
-      border-radius:12px; padding:12px 14px; font-weight:600
+      border-radius:12px; padding:12px 14px; font-weight:600; margin-top:12px;
     }
     .total small{color:var(--muted); font-weight:500}
 
-    /* Sekce 3 – QR */
+    /* SEKCE 3 – QR platba */
     .qr-wrap{
-      margin-top:16px;
+      margin-top:20px;
       display:grid; gap:12px; place-items:center;
       padding:16px; border-radius:16px;
       background:#0f1118; border:1px solid rgba(255,255,255,.12);
@@ -69,7 +65,7 @@
     .grid2{ display:grid; gap:10px }
     @media (min-width:680px){ .grid2{ grid-template-columns:1fr auto } }
 
-    .btns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center }
+    .btns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px }
     button{
       appearance:none; cursor:pointer; font-weight:600; font-size:13px;
       padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.16);
@@ -79,7 +75,7 @@
     .bankline{font-feature-settings:"tnum" 1; font-variant-numeric: tabular-nums}
   </style>
 
-  <!-- Lehká knihovna pro QR kód -->
+  <!-- Knihovna QRCodeJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
           integrity="sha512-JWx8nGZ9gC5W0v7x1KOCV3wYt2zq4Rz5Qb7Q9sSNK4f8vWgE5bRr7n8rE56+z7Dq4X3Z5YpQ2Vb1q4KfRNZ0Zg=="
           crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -97,30 +93,26 @@
       <h1>Cena lístku 200 Kč</h1>
       <p class="lead">Vyberte počet lístků, QR platba se dopočítá automaticky.</p>
 
-      <div class="row">
-        <div>
-          <label for="qty">Kolik chcete objednat lístků:</label>
-          <select id="qty">
-            <option value="1" selected>1 ks</option>
-            <option value="2">2 ks</option>
-            <option value="3">3 ks</option>
-            <option value="4">4 ks</option>
-            <option value="5">5 ks</option>
-            <option value="6">6 ks</option>
-            <option value="7">7 ks</option>
-            <option value="8">8 ks</option>
-            <option value="9">9 ks</option>
-            <option value="10">10 ks</option>
-          </select>
-        </div>
+      <label for="qty">Kolik chcete objednat lístků:</label>
+      <select id="qty">
+        <option value="1" selected>1 ks</option>
+        <option value="2">2 ks</option>
+        <option value="3">3 ks</option>
+        <option value="4">4 ks</option>
+        <option value="5">5 ks</option>
+        <option value="6">6 ks</option>
+        <option value="7">7 ks</option>
+        <option value="8">8 ks</option>
+        <option value="9">9 ks</option>
+        <option value="10">10 ks</option>
+      </select>
 
-        <div class="total">
-          <div>
-            Celkem k úhradě
-            <div class="hint">200 Kč × <span id="qtty">1</span> ks</div>
-          </div>
-          <div style="font-size:clamp(18px,2.6vw,28px)"><span id="sum">200</span> Kč</div>
+      <div class="total">
+        <div>
+          Celkem k úhradě<br>
+          <small>200 Kč × <span id="qtty">1</span> ks</small>
         </div>
+        <div style="font-size:clamp(18px,2.6vw,28px)"><span id="sum">200</span> Kč</div>
       </div>
 
       <!-- SEKCE 3: QR PLATBA -->
@@ -130,9 +122,9 @@
         <div class="grid2" style="align-items:center">
           <div class="bankline">
             <div><strong>Účet:</strong> 4373703073/0800</div>
-            <div><strong>IBAN:</strong> <span id="iban">CZ75&nbsp;0800&nbsp;0000&nbsp;0043&nbsp;7370&nbsp;3073</span></div>
+            <div><strong>IBAN:</strong> CZ75&nbsp;0800&nbsp;0000&nbsp;0043&nbsp;7370&nbsp;3073</div>
             <div><strong>VS:</strong> 2025 &nbsp;|&nbsp; <strong>Měna:</strong> CZK</div>
-            <div><strong>Zpráva:</strong> <span id="msg">Lístky 1&nbsp;ks</span></div>
+            <div><strong>Zpráva:</strong> <span id="msg">Lístky 1 ks</span></div>
           </div>
           <div class="btns">
             <button id="dlQR" type="button">Stáhnout QR</button>
@@ -146,30 +138,21 @@
         </div>
       </div>
 
-      <p class="hint" style="margin-top:10px">Standard: Short Payment Descriptor 1.0 (QR Platba). Většina CZ bank aplikací podporuje.</p>
+      <p class="hint">Standard: Short Payment Descriptor 1.0 (QR Platba). Většina CZ bank aplikací podporuje.</p>
     </div>
   </section>
 
 <script>
 /* ===== Konstanty dle zadání ===== */
-const TICKET_PRICE = 200;             // Kč za 1 lístek
-const BANK_ACC = '4373703073';        // číslo účtu
-const BANK_CODE = '0800';             // kód banky (Česká spořitelna)
-const VARIABLE_SYMBOL = '2025';       // VS
+const TICKET_PRICE = 200;
+const IBAN = 'CZ7508000000004373703073';
+const VARIABLE_SYMBOL = '2025';
 const CURRENCY = 'CZK';
 
-/* IBAN pro 4373703073/0800 je CZ75 0800 0000 0043 7370 3073 (vypočteno dle CZ formátu) */
-const IBAN = 'CZ7508000000004373703073';
-
-/* ===== Pomocné funkce pro SPD ===== */
+/* ===== Pomocné funkce ===== */
+function amountCZK(qty){ return (Number(qty) * TICKET_PRICE).toFixed(2); }
+function msgText(qty){ return `Lístky ${qty} ks`; }
 function normalizeIBAN(v){ return (v||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
-function amountCZK(qty){
-  const n = Number(qty)||1;
-  return (n * TICKET_PRICE).toFixed(2); // tečka
-}
-function msgText(qty){
-  return `Lístky ${qty} ks`;
-}
 function buildSPD({iban, amount, vs, msg}){
   const p = ['SPD*1.0'];
   const acc = normalizeIBAN(iban);
@@ -177,76 +160,61 @@ function buildSPD({iban, amount, vs, msg}){
   p.push('ACC:'+acc);
   if(amount) p.push('AM:'+amount);
   p.push('CC:'+CURRENCY);
-  if(vs) p.push('X-VS:'+String(vs).replace(/\D/g,'').slice(0,10));
-  if(msg) p.push('MSG:'+String(msg).replace(/[\r\n]+/g,' ').slice(0,60));
+  if(vs) p.push('X-VS:'+vs);
+  if(msg) p.push('MSG:'+msg);
   return p.join('*');
 }
 
-/* ===== Vykreslení QR + UI logika ===== */
+/* ===== Render funkce ===== */
 const qtyEl = document.getElementById('qty');
 const sumEl = document.getElementById('sum');
 const qttyEl = document.getElementById('qtty');
 const msgEl = document.getElementById('msg');
 const rawEl = document.getElementById('raw');
-let qr;
+
+function computeQRSize(box){
+  const w = Math.round(box.getBoundingClientRect().width || 0);
+  return Math.max(180, Math.min(320, w || 240));
+}
 
 function render(qty){
   const amount = amountCZK(qty);
   const spd = buildSPD({ iban: IBAN, amount, vs: VARIABLE_SYMBOL, msg: msgText(qty) });
 
-  // přepočítat částky a texty
-  sumEl.textContent = (Number(amount)).toLocaleString('cs-CZ', {maximumFractionDigits:0});
+  sumEl.textContent = (Number(amount)).toLocaleString('cs-CZ', { maximumFractionDigits: 0 });
   qttyEl.textContent = qty;
   msgEl.textContent = `Lístky ${qty} ks`;
   rawEl.textContent = spd;
 
-  // QR kód
   const box = document.getElementById('qr');
   box.innerHTML = '';
-  qr = new QRCode(box, {
-    text: spd,
-    width: Math.floor(box.clientWidth),
-    height: Math.floor(box.clientWidth),
-    correctLevel: QRCode.CorrectLevel.M
-  });
+  const size = computeQRSize(box);
+  new QRCode(box, { text: spd, width: size, height: size, correctLevel: QRCode.CorrectLevel.M });
 }
 
+/* ===== Události ===== */
 qtyEl.addEventListener('change', () => render(qtyEl.value));
+window.addEventListener('resize', () => { clearTimeout(window._rT); window._rT=setTimeout(()=>render(qtyEl.value),150); });
 
-// Stažení QR jako PNG
 document.getElementById('dlQR').addEventListener('click', ()=>{
   const box = document.getElementById('qr');
   const canvas = box.querySelector('canvas');
-  const img = box.querySelector('img');
-  let dataURL;
-  if(canvas){
-    dataURL = canvas.toDataURL('image/png');
-  } else if(img){
-    const c = document.createElement('canvas');
-    c.width = img.naturalWidth; c.height = img.naturalHeight;
-    const ctx = c.getContext('2d'); ctx.drawImage(img,0,0);
-    dataURL = c.toDataURL('image/png');
-  }
-  if(!dataURL) return;
+  if(!canvas) return;
   const a = document.createElement('a');
-  a.href = dataURL; a.download = 'qr-platba.png'; a.click();
+  a.href = canvas.toDataURL('image/png');
+  a.download = 'qr-platba.png';
+  a.click();
 });
 
-// Kopírování SPD
 document.getElementById('copySPD').addEventListener('click', async ()=>{
   try{
     await navigator.clipboard.writeText(rawEl.textContent);
     alert('SPD zkopírováno do schránky.');
-  }catch(e){
-    alert('Nepodařilo se zkopírovat.');
-  }
+  }catch(e){ alert('Nepodařilo se zkopírovat.'); }
 });
 
-// První vykreslení
+/* ===== Start ===== */
 render(qtyEl.value);
-
-// Při změně velikosti přepočítat QR (debounce)
-let t; window.addEventListener('resize', ()=>{ clearTimeout(t); t=setTimeout(()=>render(qtyEl.value), 150); });
 </script>
 </body>
 </html>
