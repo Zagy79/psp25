@@ -46,4 +46,274 @@
   </figure>
   <a class="dl" href="plakat.png" download>Stáhnout</a>
 </body>
+
+
+
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>QR Platba – generátor</title>
+  <style>
+    :root { --bg:#0b0b10; --card:#12131a; --muted:#9aa3b2; --txt:#e8ecf1; --accent:#4da3ff; }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; color:var(--txt); background:radial-gradient(1200px 800px at 70% -10%, #182034 0%, var(--bg) 55%);}
+    .wrap{min-height:100svh; display:grid; place-items:center; padding:20px}
+    .card{width:min(960px,100%); background:color-mix(in srgb, var(--card) 90%, black 10%); border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:20px; box-shadow:0 20px 50px rgba(0,0,0,.35)}
+    .grid{display:grid; gap:16px}
+    @media (min-width:880px){ .grid{grid-template-columns:1fr 360px; align-items:start} }
+    h1{margin:6px 0 14px; font-size:clamp(22px,2.3vw,28px)}
+    p.hint{margin:-6px 0 14px; color:var(--muted); font-size:14px}
+    form{display:grid; gap:10px}
+    label{font-size:13px; color:var(--muted); display:flex; justify-content:space-between}
+    input, textarea, select{
+      width:100%; padding:12px 14px; color:var(--txt); background:#0f1118;
+      border:1px solid rgba(255,255,255,.08); border-radius:12px; outline:none;
+    }
+    input:focus, textarea:focus{border-color:var(--accent)}
+    .row{display:grid; gap:10px; grid-template-columns:1fr 1fr}
+    .qrbox{display:grid; gap:12px; place-items:center; background:#0f1118; border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:18px}
+    .qr{width:min(70vw, 320px); aspect-ratio:1/1; display:grid; place-items:center}
+    .meta{font-size:12px; color:var(--muted); word-break:break-all}
+    .btns{display:flex; gap:10px; flex-wrap:wrap}
+    button, .ghost{
+      appearance:none; border:1px solid rgba(255,255,255,.12); background:#151826; color:var(--txt);
+      padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:600
+    }
+    button.primary{background:linear-gradient(180deg,#2b7bff,#256bdf); border:none}
+    .ghost{display:inline-flex; align-items:center; gap:8px; text-decoration:none}
+    .small{font-size:12px; color:var(--muted)}
+    .footer{display:flex; justify-content:space-between; align-items:center; margin-top:8px}
+  </style>
+  <!-- Lehká knihovna pro QR kód (Kazuhiko Arase) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-JWx8nGZ9gC5W0v7x1KOCV3wYt2zq4Rz5Qb7Q9sSNK4f8vWgE5bRr7n8rE56+z7Dq4X3Z5YpQ2Vb1q4KfRNZ0Zg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Generátor QR platby (SPD 1.0)</h1>
+      <p class="hint">Vyplňte údaje k platbě. QR kód se generuje automaticky. Částka je v CZK (desetinná tečka).</p>
+
+      <div class="grid">
+        <form id="f">
+          <div>
+            <label>IBAN (příjemce) <span class="small">např. CZ65 0800 0000 1920 0012 3456</span></label>
+            <input id="iban" required placeholder="CZ…" autocomplete="off" />
+          </div>
+          <div class="row">
+            <div>
+              <label>Částka (AM) <span class="small">např. 1250.00</span></label>
+              <input id="amount" type="number" inputmode="decimal" step="0.01" min="0" placeholder="0.00" />
+            </div>
+            <div>
+              <label>Měna (CC)</label>
+              <select id="cc">
+                <option value="CZK" selected>CZK</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>VS (X-VS)</label>
+              <input id="vs" inputmode="numeric" pattern="[0-9]{1,10}" placeholder="Variabilní symbol" />
+            </div>
+            <div>
+              <label>SS (X-SS)</label>
+              <input id="ss" inputmode="numeric" pattern="[0-9]{1,10}" placeholder="Specifický symbol" />
+            </div>
+          </div>
+          <div>
+            <label>KS (X-KS)</label>
+            <input id="ks" inputmode="numeric" pattern="[0-9]{1,4}" placeholder="Konstantní symbol (volitelný)" />
+          </div>
+          <div>
+            <label>Zpráva pro příjemce (MSG)</label>
+            <input id="msg" maxlength="60" placeholder="Text zprávy (max ~60 znaků)" />
+          </div>
+          <div class="row">
+            <div>
+              <label>Datum splatnosti (DT) <span class="small">YYYY-MM-DD</span></label>
+              <input id="dt" type="date" />
+            </div>
+            <div>
+              <label>Identifikátor (ID) <span class="small">volitelné</span></label>
+              <input id="id" maxlength="20" placeholder="Váš identifikátor" />
+            </div>
+          </div>
+          <div class="btns">
+            <button type="button" class="primary" id="downloadBtn">Stáhnout PNG</button>
+            <a class="ghost" href="#" id="shareLink">Sdílet předvyplněný odkaz</a>
+          </div>
+        </form>
+
+        <div class="qrbox">
+          <div id="qr" class="qr" aria-label="QR kód platby"></div>
+          <div class="meta">
+            <strong>Obsah (SPD):</strong>
+            <div id="raw"></div>
+          </div>
+          <div class="footer small">
+            <span>Standard: Short Payment Descriptor 1.0</span>
+            <span>© vaše stránka</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  // Pomocné funkce
+  const el = id => document.getElementById(id);
+  const fields = ["iban","amount","cc","vs","ss","ks","msg","dt","id"];
+
+  function normalizeIBAN(v){
+    return (v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  }
+
+  function decAmount(v){
+    if(!v) return "";
+    const n = Number(v);
+    if(!isFinite(n) || n <= 0) return "";
+    return n.toFixed(2); // tečka
+  }
+
+  function esc(v){
+    if(v==null) return "";
+    // SPD nepovoluje * a \n; u MSG je vhodné odstranit CR/LF
+    return String(v).replace(/[\r\n]+/g," ").slice(0, 60);
+  }
+
+  function buildSPD(d){
+    // Minimální validace
+    const parts = ["SPD*1.0"];
+    const iban = normalizeIBAN(d.iban);
+    if(!iban){ return ""; }
+    parts.push("ACC:"+iban);
+
+    const amt = decAmount(d.amount);
+    if(amt) parts.push("AM:"+amt);
+
+    const cc = (d.cc||"CZK").toUpperCase();
+    if(cc !== "CZK") parts.push("CC:"+cc); else parts.push("CC:CZK");
+
+    if(d.vs) parts.push("X-VS:"+String(d.vs).replace(/\D/g,"").slice(0,10));
+    if(d.ss) parts.push("X-SS:"+String(d.ss).replace(/\D/g,"").slice(0,10));
+    if(d.ks) parts.push("X-KS:"+String(d.ks).replace(/\D/g,"").slice(0,4));
+    if(d.msg) parts.push("MSG:"+esc(d.msg));
+    if(d.dt)  parts.push("DT:"+d.dt); // YYYY-MM-DD
+    if(d.id)  parts.push("ID:"+esc(d.id).slice(0,20));
+
+    return parts.join("*");
+  }
+
+  // QR vykreslení
+  let qr;
+  function renderQR(text){
+    const box = el("qr");
+    box.innerHTML = "";
+    if(!text){
+      box.innerHTML = "<div style='opacity:.6;font-size:14px;text-align:center;padding:12px'>Vyplňte alespoň IBAN</div>";
+      el("raw").textContent = "";
+      return;
+    }
+    qr = new QRCode(box, {
+      text,
+      width: Math.min(box.clientWidth, 320),
+      height: Math.min(box.clientWidth, 320),
+      correctLevel: QRCode.CorrectLevel.M
+    });
+    el("raw").textContent = text;
+  }
+
+  function readForm(){
+    const data = {};
+    fields.forEach(k => data[k] = el(k).value.trim());
+    return data;
+  }
+
+  function update(){
+    const d = readForm();
+    const spd = buildSPD(d);
+    renderQR(spd);
+    updateShareLink(d);
+  }
+
+  function updateShareLink(d){
+    const url = new URL(location.href);
+    url.search = ""; // reset
+    const params = new URLSearchParams();
+    if(d.iban) params.set("iban", normalizeIBAN(d.iban));
+    if(d.amount) params.set("amount", decAmount(d.amount));
+    if(d.cc && d.cc!=="CZK") params.set("cc", d.cc);
+    if(d.vs) params.set("vs", d.vs.replace(/\D/g,""));
+    if(d.ss) params.set("ss", d.ss.replace(/\D/g,""));
+    if(d.ks) params.set("ks", d.ks.replace(/\D/g,""));
+    if(d.msg) params.set("msg", d.msg);
+    if(d.dt)  params.set("dt", d.dt);
+    if(d.id)  params.set("id", d.id);
+    const link = params.toString() ? url.origin + url.pathname + "?" + params.toString() : url.origin + url.pathname;
+    el("shareLink").href = link;
+  }
+
+  function prefillFromURL(){
+    const q = new URLSearchParams(location.search);
+    const get = k => q.get(k) || "";
+    el("iban").value   = get("iban");
+    el("amount").value = get("amount");
+    el("cc").value     = (get("cc")||"CZK").toUpperCase();
+    el("vs").value     = get("vs");
+    el("ss").value     = get("ss");
+    el("ks").value     = get("ks");
+    el("msg").value    = get("msg");
+    el("dt").value     = get("dt");
+    el("id").value     = get("id");
+  }
+
+  function downloadPNG(){
+    const box = el("qr");
+    const img = box.querySelector("img");
+    const canvas = box.querySelector("canvas");
+
+    // Knihovna může vyrenderovat IMG nebo CANVAS – obě podpoříme
+    let dataURL;
+    if(canvas){
+      dataURL = canvas.toDataURL("image/png");
+    } else if(img){
+      // Překreslit IMG na CANVAS kvůli downloadu
+      const c = document.createElement("canvas");
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      const ctx = c.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      dataURL = c.toDataURL("image/png");
+    }
+    if(!dataURL) return;
+
+    const a = document.createElement("a");
+    a.href = dataURL;
+    a.download = "qr-platba.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  // Eventy
+  fields.forEach(id => el(id).addEventListener("input", update));
+  el("downloadBtn").addEventListener("click", downloadPNG);
+
+  // Inicializace
+  prefillFromURL();
+  update();
+
+  // Responsivní přepočet při změně velikosti
+  let t;
+  window.addEventListener("resize", () => {
+    clearTimeout(t);
+    t = setTimeout(update, 150);
+  });
+})();
+</script>
+</body>
 </html>
+
