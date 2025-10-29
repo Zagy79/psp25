@@ -3,38 +3,141 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Psychopařba – vstupenky online</title>
+  <title>Vstupenky – QR platba</title>
   <style>
-    :root{ --bg:#000; --txt:#e8ecf1; --muted:#9aa3b2; }
+    :root{
+      --bg:#000;
+      --txt:#e8ecf1;
+      --muted:#9aa3b2;
+    }
     *{box-sizing:border-box}
-    html, body{ margin:0; padding:0; background:var(--bg); color:var(--txt);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; }
+    html, body{
+      margin:0; padding:0;
+      background:var(--bg);
+      color:var(--txt);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+    }
 
-    .hero{min-height:100svh;display:grid;place-items:center;background:#000;}
-    .hero img{display:block;max-width:100vw;max-height:100svh;width:auto;height:auto;object-fit:contain;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+    /* SEKCE 1 – plakát */
+    .hero{
+      min-height:100svh;
+      display:grid;
+      place-items:center;
+      background:#000;
+    }
+    .hero img{
+      display:block;
+      max-width:100vw;
+      max-height:100svh;
+      width:auto;
+      height:auto;
+      object-fit:contain;
+      border-radius:10px;
+      box-shadow:0 20px 60px rgba(0,0,0,.5);
+    }
 
-    .panel{padding:20px 16px 50px;display:grid;place-items:center;background:#000;border-top:1px solid rgba(255,255,255,.06);}
-    .card{width:min(900px,100%);background:#000;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.35);}
-    h1{text-align:center;margin:6px 0 22px;font-size:clamp(22px,2.4vw,30px);}
-    label{display:block;font-size:14px;color:var(--muted);margin-bottom:6px;}
-    input, select{width:100%;padding:12px 14px;border-radius:12px;background:#0f0f0f;color:var(--txt);border:1px solid rgba(255,255,255,.12);font-size:16px;outline:none;margin-bottom:14px;}
-    .total{display:flex;align-items:center;justify-content:space-between;background:#0f0f0f;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px;font-weight:600;margin-top:12px;}
-    .total small{color:var(--muted);font-weight:500;}
+    /* SEKCE 2 – cena + formulář */
+    .panel{
+      padding:20px 16px 50px;
+      display:grid;
+      place-items:center;
+      background:#000;
+      border-top:1px solid rgba(255,255,255,.06);
+    }
+    .card{
+      width:min(900px,100%);
+      background:#000;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:0 20px 50px rgba(0,0,0,.35);
+    }
+    h1{
+      text-align:center;
+      margin:6px 0 22px;
+      font-size:clamp(22px,2.4vw,30px);
+    }
+    label{
+      display:block;
+      font-size:14px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    input, select{
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      background:#0f0f0f;
+      color:var(--txt);
+      border:1px solid rgba(255,255,255,.12);
+      font-size:16px;
+      outline:none;
+      margin-bottom:14px;
+    }
+    .total{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:#0f0f0f;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:12px;
+      padding:12px 14px;
+      font-weight:600;
+      margin-top:12px;
+    }
+    .total small{color:var(--muted); font-weight:500}
 
-    .qr-wrap{margin-top:40px;display:grid;place-items:center;padding:20px;background:#000;}
-    .qr-box{width:clamp(200px,35vw,320px);margin-bottom:20px;}
-    .qr-box img{display:block;width:100%;height:auto;border-radius:8px;background:#fff;}
-    .btns{display:flex;flex-direction:column;gap:10px;align-items:center;}
-    button{appearance:none;cursor:pointer;font-weight:600;font-size:15px;padding:10px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:#151826;color:#fff;width:fit-content;min-width:240px;}
-    button:hover{background:#1f2433;}
+    /* SEKCE 3 – QR */
+    .qr-wrap{
+      margin-top:40px;
+      display:grid;
+      place-items:center;
+      padding:20px;
+      background:#000;
+    }
+    .qr-box{
+      width:clamp(200px, 35vw, 320px);
+      margin-bottom:20px;
+    }
+    .qr-box img{
+      display:block;
+      width:100%;
+      height:auto;
+      border-radius:8px;
+      background:#fff;
+    }
+    .btns{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:center;
+    }
+    button{
+      appearance:none;
+      cursor:pointer;
+      font-weight:600;
+      font-size:15px;
+      padding:10px 18px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.16);
+      background:#151826;
+      color:#fff;
+      width:fit-content;
+      min-width:240px;
+    }
+    button:hover{
+      background:#1f2433;
+    }
   </style>
 </head>
 <body>
 
+  <!-- SEKCE 1: PLAKÁT -->
   <section class="hero">
     <img src="plakat.png" alt="Plakát" loading="lazy">
   </section>
 
+  <!-- SEKCE 2: FORMULÁŘ -->
   <section class="panel">
     <div class="card">
       <h1>Cena lístku 200 Kč</h1>
@@ -63,6 +166,7 @@
     </div>
   </section>
 
+  <!-- SEKCE 3: QR KÓD -->
   <section class="qr-wrap">
     <div class="qr-box">
       <img id="qrImg" alt="QR kód platby" width="320" height="320" decoding="async" />
@@ -75,46 +179,28 @@
   </section>
 
 <script>
-/* ===== Konfigurace ===== */
+/* ===== Nastavení ===== */
 const TICKET_PRICE = 200;
-const IBAN = 'CZ2355000000008346955003'; // 8346955003/5500 – Raiffeisenbank
+const IBAN = 'CZ7508000000004373703073'; // 4373703073/0800
 const VARIABLE_SYMBOL = '2025';
 const CURRENCY = 'CZK';
 
 /* ===== Pomocné funkce ===== */
 function amountCZK(qty){ return (Number(qty) * TICKET_PRICE).toFixed(2); }
-
-function pluralVstupenka(qty){
-  qty = Number(qty);
-  return qty === 1 ? "vstupenka" : (qty < 5 ? "vstupenky" : "vstupenek");
+function msgText(name, qty){
+  if(!name) name = "Bez jména";
+  const plural = qty == 1 ? "vstupenka" : (qty < 5 ? "vstupenky" : "vstupenek");
+  return `${name} - celkem ${qty} ${plural}`;
 }
-
-/* ⚠️ Některé banky špatně tráví diakritiku v MSG → odstraňujeme ji */
-function stripDiacritics(str){
-  return (str || '')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // odstraní diakritiku
-    .replace(/[^\x20-\x7E]/g,''); // ponechá čisté ASCII
-}
-
-/* MSG do SPD – jen bezpečný text bez diakritiky */
-function msgForReceiver(qty){
-  const plural = pluralVstupenka(qty);
-  const msg = `Psychoparba - celkem ${qty} ${plural}`;
-  return stripDiacritics(msg).slice(0,60);
-}
-
-/* Sestavení SPD 1.0 */
 function buildSPD({iban, amount, vs, msg}){
   const p = ['SPD*1.0'];
-  p.push('ACC:'+iban);           // IBAN bez mezer
-  if(amount) p.push('AM:'+amount); // 2 desetinná místa s tečkou
+  p.push('ACC:'+iban);
+  p.push('AM:'+amount);
   p.push('CC:'+CURRENCY);
-  if(vs) p.push('X-VS:'+String(vs).replace(/\D/g,'').slice(0,10));
+  p.push('X-VS:'+vs);
   if(msg) p.push('MSG:'+msg.replace(/[\r\n]+/g,' ').slice(0,60));
   return p.join('*');
 }
-
-/* Výpočet velikosti a vygenerování QR jako obrázku z API */
 function qrSize(){
   const box = document.querySelector('.qr-box');
   const w = Math.round((box && box.getBoundingClientRect().width) || 300);
@@ -122,15 +208,14 @@ function qrSize(){
 }
 function setQRImage(spd){
   const size = qrSize();
-  // větší tichá zóna (quiet zone) = margin 4
-  const url = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(spd)}&size=${size}x${size}&margin=4`;
+  const url = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(spd)}&size=${size}x${size}&margin=1`;
   const img = document.getElementById('qrImg');
   img.src = url;
   img.width = size; img.height = size;
 }
 
 /* ===== UI logika ===== */
-const nameEl = document.getElementById('name'); // jméno ponecháváme pro výpis, v SPD není nutné
+const nameEl = document.getElementById('name');
 const qtyEl  = document.getElementById('qty');
 const sumEl  = document.getElementById('sum');
 const qttyEl = document.getElementById('qtty');
@@ -139,20 +224,17 @@ const openQRBtn = document.getElementById('openQR');
 
 function render(){
   const qty = qtyEl.value;
+  const name = nameEl.value.trim();
   const amount = amountCZK(qty);
-  const spd = buildSPD({
-    iban: IBAN,
-    amount,
-    vs: VARIABLE_SYMBOL,
-    msg: msgForReceiver(qty)   // bezpečný ASCII MSG
-  });
+  const msg = msgText(name, qty);
+  const spd = buildSPD({ iban: IBAN, amount, vs: VARIABLE_SYMBOL, msg });
 
   sumEl.textContent = (Number(amount)).toLocaleString('cs-CZ', { maximumFractionDigits: 0 });
   qttyEl.textContent = qty;
   setQRImage(spd);
 }
 
-/* Stáhnout QR */
+/* ===== Stáhnutí QR kódu ===== */
 dlQRBtn.addEventListener('click', async ()=>{
   const img = document.getElementById('qrImg');
   try {
@@ -169,17 +251,18 @@ dlQRBtn.addEventListener('click', async ()=>{
   }
 });
 
-/* Otevřít v nové kartě (pro iPhone ideál) */
+/* ===== Otevření QR v nové kartě ===== */
 openQRBtn.addEventListener('click', ()=>{
   const img = document.getElementById('qrImg');
   window.open(img.src, '_blank');
 });
 
-/* Přepočty */
-nameEl.addEventListener('input', render); // nepoužívá SPD, ale necháváme pro budoucí rozšíření
+/* ===== Události ===== */
+nameEl.addEventListener('input', render);
 qtyEl.addEventListener('change', render);
 window.addEventListener('resize', () => { clearTimeout(window._rT); window._rT = setTimeout(()=>render(), 150); });
 
+/* Start */
 render();
 </script>
 </body>
