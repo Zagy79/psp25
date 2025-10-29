@@ -68,7 +68,7 @@
       padding:12px 14px;
       border-radius:12px;
       background:#0f0f0f;
-      color:var(--txt);
+      color:#fff;
       border:1px solid rgba(255,255,255,.12);
       font-size:16px;
       outline:none;
@@ -181,7 +181,7 @@
 <script>
 /* ===== Nastavení ===== */
 const TICKET_PRICE = 200;
-const IBAN = 'CZ7508000000004373703073'; // 4373703073/0800
+const IBAN = 'CZ7508000000004373703073'; // 4373703073/0800  (můžeš klidně vkládat i s mezerami)
 const VARIABLE_SYMBOL = '2025';
 const CURRENCY = 'CZK';
 
@@ -192,15 +192,23 @@ function msgText(name, qty){
   const plural = qty == 1 ? "vstupenka" : (qty < 5 ? "vstupenky" : "vstupenek");
   return `${name} - celkem ${qty} ${plural}`;
 }
+
+/* ⛑️ Očista IBANu – odstraní mezery, NBSP, neviditelné znaky; převede na CAPS */
+function normalizeIBAN(v){
+  return (v || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
 function buildSPD({iban, amount, vs, msg}){
   const p = ['SPD*1.0'];
-  p.push('ACC:'+iban);
-  p.push('AM:'+amount);
+  const acc = normalizeIBAN(iban);      // ✅ vždy čistý IBAN bez „pastí“
+  p.push('ACC:'+acc);
+  if (amount) p.push('AM:'+amount);
   p.push('CC:'+CURRENCY);
-  p.push('X-VS:'+vs);
-  if(msg) p.push('MSG:'+msg.replace(/[\r\n]+/g,' ').slice(0,60));
+  if (vs) p.push('X-VS:'+String(vs).replace(/\D/g,'').slice(0,10));
+  if (msg) p.push('MSG:'+msg.replace(/[\r\n]+/g,' ').slice(0,60));
   return p.join('*');
 }
+
 function qrSize(){
   const box = document.querySelector('.qr-box');
   const w = Math.round((box && box.getBoundingClientRect().width) || 300);
