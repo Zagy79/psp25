@@ -5,23 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Vstupenky – QR platba</title>
   <style>
-    :root{
-      --bg:#0b0b10; --txt:#e8ecf1; --muted:#9aa3b2; --card:#12131a; --brand:#4da3ff;
-    }
+    :root{ --bg:#0b0b10; --txt:#e8ecf1; --muted:#9aa3b2; --card:#12131a; }
     *{box-sizing:border-box}
     html, body{margin:0; padding:0; background:var(--bg); color:var(--txt); font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-    a{color:inherit;text-decoration:none}
+    a{color:inherit; text-decoration:none}
 
     /* SEKCE 1 – plakát přes celou obrazovku */
-    .hero{
-      min-height:100svh;
-      display:grid; place-items:center;
-      background:#000;
-    }
+    .hero{ min-height:100svh; display:grid; place-items:center; background:#000; }
     .hero img{
-      display:block;
-      max-width:100vw; max-height:100svh;
-      width:auto; height:auto; object-fit:contain;
+      display:block; max-width:100vw; max-height:100svh; width:auto; height:auto; object-fit:contain;
       border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,.5);
     }
 
@@ -35,8 +27,7 @@
       width:min(900px,100%);
       background: color-mix(in srgb, var(--card) 90%, black 10%);
       border:1px solid rgba(255,255,255,.08);
-      border-radius:18px; padding:18px;
-      box-shadow:0 20px 50px rgba(0,0,0,.35);
+      border-radius:18px; padding:18px; box-shadow:0 20px 50px rgba(0,0,0,.35);
     }
     h1{margin:6px 0 8px; font-size:clamp(22px,2.4vw,30px)}
     p.lead{margin:0 0 10px; color:var(--muted)}
@@ -55,12 +46,12 @@
 
     /* SEKCE 3 – QR platba */
     .qr-wrap{
-      margin-top:20px;
-      display:grid; gap:12px; place-items:center;
-      padding:16px; border-radius:16px;
-      background:#0f1118; border:1px solid rgba(255,255,255,.12);
+      margin-top:20px; display:grid; gap:12px; place-items:center;
+      padding:16px; border-radius:16px; background:#0f1118; border:1px solid rgba(255,255,255,.12);
     }
-    .qr{ width: clamp(180px, 28vw, 320px); aspect-ratio:1/1; display:grid; place-items:center }
+    .qr{ width: clamp(180px, 28vw, 320px); /* výška dodá lib. prvek */ }
+    /* ✅ Důležité pro Safari: vynutit rozměr vygenerovaného prvku */
+    .qr canvas, .qr img{ display:block; width:100% !important; height:auto !important }
     .meta{ font-size:12px; color:var(--muted); text-align:center; word-break:break-all; max-width:720px }
     .grid2{ display:grid; gap:10px }
     @media (min-width:680px){ .grid2{ grid-template-columns:1fr auto } }
@@ -95,23 +86,15 @@
 
       <label for="qty">Kolik chcete objednat lístků:</label>
       <select id="qty">
-        <option value="1" selected>1 ks</option>
-        <option value="2">2 ks</option>
-        <option value="3">3 ks</option>
-        <option value="4">4 ks</option>
-        <option value="5">5 ks</option>
-        <option value="6">6 ks</option>
-        <option value="7">7 ks</option>
-        <option value="8">8 ks</option>
-        <option value="9">9 ks</option>
-        <option value="10">10 ks</option>
+        <option value="1" selected>1 ks</option><option value="2">2 ks</option>
+        <option value="3">3 ks</option><option value="4">4 ks</option>
+        <option value="5">5 ks</option><option value="6">6 ks</option>
+        <option value="7">7 ks</option><option value="8">8 ks</option>
+        <option value="9">9 ks</option><option value="10">10 ks</option>
       </select>
 
       <div class="total">
-        <div>
-          Celkem k úhradě<br>
-          <small>200 Kč × <span id="qtty">1</span> ks</small>
-        </div>
+        <div>Celkem k úhradě<br><small>200 Kč × <span id="qtty">1</span> ks</small></div>
         <div style="font-size:clamp(18px,2.6vw,28px)"><span id="sum">200</span> Kč</div>
       </div>
 
@@ -145,7 +128,7 @@
 <script>
 /* ===== Konstanty dle zadání ===== */
 const TICKET_PRICE = 200;
-const IBAN = 'CZ7508000000004373703073';
+const IBAN = 'CZ7508000000004373703073';   // 4373703073/0800
 const VARIABLE_SYMBOL = '2025';
 const CURRENCY = 'CZK';
 
@@ -155,27 +138,29 @@ function msgText(qty){ return `Lístky ${qty} ks`; }
 function normalizeIBAN(v){ return (v||'').toUpperCase().replace(/[^A-Z0-9]/g,''); }
 function buildSPD({iban, amount, vs, msg}){
   const p = ['SPD*1.0'];
-  const acc = normalizeIBAN(iban);
-  if(!acc) return '';
+  const acc = normalizeIBAN(iban); if(!acc) return '';
   p.push('ACC:'+acc);
   if(amount) p.push('AM:'+amount);
   p.push('CC:'+CURRENCY);
-  if(vs) p.push('X-VS:'+vs);
-  if(msg) p.push('MSG:'+msg);
+  if(vs) p.push('X-VS:'+String(vs).replace(/\D/g,'').slice(0,10));
+  if(msg) p.push('MSG:'+String(msg).replace(/[\r\n]+/g,' ').slice(0,60));
   return p.join('*');
 }
 
-/* ===== Render funkce ===== */
+/* ✅ Nezávislá velikost QR – podle okna, ne prvku (Safari fix) */
+function computeQRSize(){
+  const vw = Math.max(document.documentElement.clientWidth||0, window.innerWidth||0);
+  const size = Math.round(vw * 0.28);            // ~28 % šířky okna
+  return Math.max(180, Math.min(320, size));     // 180–320 px
+}
+
+/* ===== Render ===== */
 const qtyEl = document.getElementById('qty');
 const sumEl = document.getElementById('sum');
 const qttyEl = document.getElementById('qtty');
 const msgEl = document.getElementById('msg');
 const rawEl = document.getElementById('raw');
-
-function computeQRSize(box){
-  const w = Math.round(box.getBoundingClientRect().width || 0);
-  return Math.max(180, Math.min(320, w || 240));
-}
+const qrBox = document.getElementById('qr');
 
 function render(qty){
   const amount = amountCZK(qty);
@@ -186,26 +171,42 @@ function render(qty){
   msgEl.textContent = `Lístky ${qty} ks`;
   rawEl.textContent = spd;
 
-  const box = document.getElementById('qr');
-  box.innerHTML = '';
-  const size = computeQRSize(box);
-  new QRCode(box, { text: spd, width: size, height: size, correctLevel: QRCode.CorrectLevel.M });
+  // QR
+  qrBox.innerHTML = '';
+  const size = computeQRSize();
+  new QRCode(qrBox, { text: spd, width: size, height: size, correctLevel: QRCode.CorrectLevel.M });
 }
 
 /* ===== Události ===== */
 qtyEl.addEventListener('change', () => render(qtyEl.value));
 window.addEventListener('resize', () => { clearTimeout(window._rT); window._rT=setTimeout(()=>render(qtyEl.value),150); });
 
+/* ✅ Stáhnout QR – funguje pro CANVAS i IMG (Safari) */
 document.getElementById('dlQR').addEventListener('click', ()=>{
-  const box = document.getElementById('qr');
-  const canvas = box.querySelector('canvas');
-  if(!canvas) return;
+  const canvas = qrBox.querySelector('canvas');
+  const img = qrBox.querySelector('img');
+  let dataURL = null;
+
+  if(canvas){
+    dataURL = canvas.toDataURL('image/png');
+  } else if(img){
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth || computeQRSize();
+    c.height = img.naturalHeight || computeQRSize();
+    const ctx = c.getContext('2d');
+    // když by Safari vrátilo 0×0, nakreslíme podle aktuálního zobrazení
+    const w = c.width || qrBox.clientWidth || computeQRSize();
+    const h = c.height || w;
+    c.width = w; c.height = h;
+    ctx.drawImage(img, 0, 0, w, h);
+    dataURL = c.toDataURL('image/png');
+  }
+  if(!dataURL) return;
   const a = document.createElement('a');
-  a.href = canvas.toDataURL('image/png');
-  a.download = 'qr-platba.png';
-  a.click();
+  a.href = dataURL; a.download = 'qr-platba.png'; a.click();
 });
 
+/* Kopírovat SPD */
 document.getElementById('copySPD').addEventListener('click', async ()=>{
   try{
     await navigator.clipboard.writeText(rawEl.textContent);
@@ -213,7 +214,7 @@ document.getElementById('copySPD').addEventListener('click', async ()=>{
   }catch(e){ alert('Nepodařilo se zkopírovat.'); }
 });
 
-/* ===== Start ===== */
+/* Start */
 render(qtyEl.value);
 </script>
 </body>
