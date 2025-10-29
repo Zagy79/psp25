@@ -5,18 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Psychopařba – vstupenky online</title>
   <style>
-    :root{
-      --bg:#000;
-      --txt:#e8ecf1;
-      --muted:#9aa3b2;
-    }
+    :root{ --bg:#000; --txt:#e8ecf1; --muted:#9aa3b2; }
     *{box-sizing:border-box}
-    html, body{
-      margin:0; padding:0;
-      background:var(--bg);
-      color:var(--txt);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-    }
+    html, body{ margin:0; padding:0; background:var(--bg); color:var(--txt);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif; }
 
     .hero{min-height:100svh;display:grid;place-items:center;background:#000;}
     .hero img{display:block;max-width:100vw;max-height:100svh;width:auto;height:auto;object-fit:contain;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
@@ -84,7 +76,8 @@
 
 <script>
 const TICKET_PRICE = 200;
-const IBAN = 'CZ2355000000008346955003'; // 8346955003/5500
+// Tvůj IBAN (Česká spořitelna), bez mezer:
+const IBAN = 'CZ7508000000004373703073';
 const VARIABLE_SYMBOL = '2025';
 const CURRENCY = 'CZK';
 
@@ -100,11 +93,11 @@ function msgForReceiver(qty){
 }
 function buildSPD({iban, amount, vs, msg}){
   const p = ['SPD*1.0'];
-  p.push('ACC:'+iban);
-  p.push('AM:'+amount);
-  p.push('CC:'+CURRENCY);
-  p.push('X-VS:'+vs);
-  if(msg) p.push('MSG:'+msg.replace(/[\r\n]+/g,' ').slice(0,60));
+  p.push('ACC:'+iban);           // IBAN bez mezer
+  p.push('AM:'+amount);          // částka s tečkou
+  p.push('CC:'+CURRENCY);        // měna
+  p.push('X-VS:'+vs);            // variabilní symbol
+  if(msg) p.push('MSG:'+msg.replace(/[\r\n]+/g,' ').slice(0,60)); // zpráva max ~60 znaků
   return p.join('*');
 }
 function qrSize(){
@@ -131,9 +124,13 @@ function render(){
   const qty = qtyEl.value;
   const name = nameEl.value.trim();
   const amount = amountCZK(qty);
-  const msg = msgForReceiver(qty); // pro příjemce
-  const note = msgText(name, qty); // poznámka s jménem
-  const spd = buildSPD({ iban: IBAN, amount, vs: VARIABLE_SYMBOL, msg: msg });
+
+  // Zpráva pro příjemce (ty): Psychopařba - celkem X vstupenek
+  const msg = msgForReceiver(qty);
+  // Poznámka se jménem si necháváme jen pro tebe (není nutně v SPD)
+  const note = msgText(name, qty);
+
+  const spd = buildSPD({ iban: IBAN, amount, vs: VARIABLE_SYMBOL, msg });
 
   sumEl.textContent = (Number(amount)).toLocaleString('cs-CZ', { maximumFractionDigits: 0 });
   qttyEl.textContent = qty;
