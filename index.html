@@ -36,9 +36,9 @@
       box-shadow:0 20px 60px rgba(0,0,0,.5);
     }
 
-    /* SEKCE 2 – cena + výběr */
+    /* SEKCE 2 – cena + formulář */
     .panel{
-      padding:40px 16px;
+      padding:20px 16px 50px;
       display:grid;
       place-items:center;
       background:#000;
@@ -54,7 +54,7 @@
     }
     h1{
       text-align:center;
-      margin:6px 0 8px;
+      margin:6px 0 22px;
       font-size:clamp(22px,2.4vw,30px);
     }
     label{
@@ -63,7 +63,7 @@
       color:var(--muted);
       margin-bottom:6px;
     }
-    select{
+    input, select{
       width:100%;
       padding:12px 14px;
       border-radius:12px;
@@ -72,6 +72,7 @@
       border:1px solid rgba(255,255,255,.12);
       font-size:16px;
       outline:none;
+      margin-bottom:14px;
     }
     .total{
       display:flex;
@@ -136,10 +137,13 @@
     <img src="plakat.png" alt="Plakát" loading="lazy">
   </section>
 
-  <!-- SEKCE 2: CENA + VÝBĚR POČTU -->
+  <!-- SEKCE 2: FORMULÁŘ -->
   <section class="panel">
     <div class="card">
       <h1>Cena lístku 200 Kč</h1>
+
+      <label for="name">Jméno a příjmení:</label>
+      <input type="text" id="name" placeholder="Zadejte své jméno a příjmení">
 
       <label for="qty">Kolik chcete objednat lístků:</label>
       <select id="qty">
@@ -183,7 +187,11 @@ const CURRENCY = 'CZK';
 
 /* ===== Pomocné funkce ===== */
 function amountCZK(qty){ return (Number(qty) * TICKET_PRICE).toFixed(2); }
-function msgText(qty){ return `Lístky ${qty} ks`; }
+function msgText(name, qty){
+  if(!name) name = "Bez jména";
+  const plural = qty == 1 ? "vstupenka" : (qty < 5 ? "vstupenky" : "vstupenek");
+  return `${name} - celkem ${qty} ${plural}`;
+}
 function buildSPD({iban, amount, vs, msg}){
   const p = ['SPD*1.0'];
   p.push('ACC:'+iban);
@@ -207,15 +215,20 @@ function setQRImage(spd){
 }
 
 /* ===== UI logika ===== */
+const nameEl = document.getElementById('name');
 const qtyEl  = document.getElementById('qty');
 const sumEl  = document.getElementById('sum');
 const qttyEl = document.getElementById('qtty');
 const dlQRBtn = document.getElementById('dlQR');
 const openQRBtn = document.getElementById('openQR');
 
-function render(qty){
+function render(){
+  const qty = qtyEl.value;
+  const name = nameEl.value.trim();
   const amount = amountCZK(qty);
-  const spd = buildSPD({ iban: IBAN, amount, vs: VARIABLE_SYMBOL, msg: msgText(qty) });
+  const msg = msgText(name, qty);
+  const spd = buildSPD({ iban: IBAN, amount, vs: VARIABLE_SYMBOL, msg });
+
   sumEl.textContent = (Number(amount)).toLocaleString('cs-CZ', { maximumFractionDigits: 0 });
   qttyEl.textContent = qty;
   setQRImage(spd);
@@ -244,11 +257,13 @@ openQRBtn.addEventListener('click', ()=>{
   window.open(img.src, '_blank');
 });
 
-qtyEl.addEventListener('change', () => render(qtyEl.value));
-window.addEventListener('resize', () => { clearTimeout(window._rT); window._rT = setTimeout(()=>render(qtyEl.value), 150); });
+/* ===== Události ===== */
+nameEl.addEventListener('input', render);
+qtyEl.addEventListener('change', render);
+window.addEventListener('resize', () => { clearTimeout(window._rT); window._rT = setTimeout(()=>render(), 150); });
 
 /* Start */
-render(qtyEl.value);
+render();
 </script>
 </body>
 </html>
