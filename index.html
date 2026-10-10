@@ -64,6 +64,7 @@
     /* 3 – formulář */
     .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 18px;margin:22px 0}
     .card h2{font:600 24px/1.2 var(--serif);margin:0 0 4px;text-align:center}
+    .card h2.pay-h{margin-bottom:14px}
     .card .price{text-align:center;color:var(--muted);margin:0 0 18px}
     label{display:block;font-size:14px;color:var(--muted);margin:0 0 6px}
     input[type=text]{width:100%;padding:13px 14px;border-radius:10px;background:var(--field);color:var(--txt);
@@ -183,8 +184,7 @@
 
     <!-- 4: PLATBA -->
     <section class="card" id="pay" hidden aria-labelledby="pay-title" tabindex="-1">
-      <h2 id="pay-title">Zaplať převodem</h2>
-      <p class="price">Naskenuj QR kód v bankovní aplikaci</p>
+      <h2 id="pay-title" class="pay-h">Zaplať převodem</h2>
 
       <div class="qr"><canvas id="qrCanvas" hidden></canvas><img id="qrImg" alt="QR kód pro platbu"></div>
       <button type="button" class="primary" id="dl">Uložit QR kód do galerie</button>
@@ -200,9 +200,7 @@
       </details>
 
       <div class="note">
-        <p><strong>Variabilní symbol <span id="pVs2"></span> je jen tvůj.</strong> Podle něj spárujeme platbu s tvým jménem.</p>
-        <p>Udělej si screenshot téhle obrazovky – kdyby u vstupu něco nesedělo, prokážeš se jím.</p>
-        <p>Problém s platbou? Napiš na <a class="js-mail"></a> a uveď svůj VS.</p>
+        <p>Tvůj VS <strong id="pVs2"></strong> – pro jistotu si udělej screenshot. Problém s platbou? <a class="js-mail"></a></p>
       </div>
       <p class="status" id="status" aria-live="polite"></p>
     </section>
