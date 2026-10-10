@@ -39,8 +39,9 @@
       padding:8px 12px;letter-spacing:.02em}
 
     /* 1 – plakát */
-    .hero{display:grid;place-items:center;padding:12px 0 0}
-    .hero img{width:auto;max-width:min(100%,560px);max-height:calc(100svh - 96px);height:auto;
+    /* první obrazovka = jen plakát; dole místo pro plovoucí tlačítko */
+    .hero{display:grid;place-items:center;min-height:100vh;min-height:100svh;padding:12px 12px 84px}
+    .hero img{width:auto;max-width:min(100%,560px);max-height:calc(100vh - 100px);max-height:calc(100svh - 100px);height:auto;
       border-radius:6px;box-shadow:0 24px 70px rgba(0,0,0,.6)}
 
     /* plovoucí tlačítko na mobilu, dokud není vidět formulář */
