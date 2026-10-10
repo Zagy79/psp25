@@ -87,7 +87,7 @@
     /* 4 – platba */
     #pay[hidden]{display:none}
     .qr{background:#fff;border-radius:12px;padding:12px;width:min(280px,100%);margin:6px auto 10px}
-    .qr canvas{width:100%;height:auto;image-rendering:pixelated}
+    .qr img{width:100%;height:auto;image-rendering:pixelated;-webkit-touch-callout:default}
     .qr-cap{text-align:center;font-size:13px;color:var(--muted);margin:0 0 16px}
     .rows{display:grid;gap:8px;margin:0}
     .row{display:flex;align-items:center;gap:10px;background:var(--field);border:1px solid var(--line);
@@ -180,7 +180,7 @@
       <h2 id="pay-title">Zaplať převodem</h2>
       <p class="price">Naskenuj QR kód v bankovní aplikaci</p>
 
-      <div class="qr"><canvas id="qrCanvas" role="img" aria-label="QR kód pro platbu"></canvas></div>
+      <div class="qr"><canvas id="qrCanvas" hidden></canvas><img id="qrImg" alt="QR kód pro platbu"></div>
       <p class="qr-cap">QR Platba – částka, účet i symbol se vyplní samy</p>
 
       <dl class="rows">
@@ -190,9 +190,10 @@
         <div class="row"><div><dt>Zpráva pro příjemce</dt><dd id="pMsg"></dd></div><button class="copy" data-copy="pMsg">Kopírovat</button></div>
       </dl>
 
-      <button type="button" class="secondary" id="dl">Uložit QR kód do telefonu</button>
-      <p class="phone-tip"><strong>Platíš z tohoto telefonu?</strong> Ulož si QR kód a v bankovní aplikaci
-        ho načti z galerie (u QR Platby bývá volba „Nahrát z obrázku“). Nebo údaje výše zkopíruj.</p>
+      <button type="button" class="secondary" id="dl">Uložit QR kód do galerie</button>
+      <p class="phone-tip"><strong>Platíš z tohoto telefonu?</strong> Klepni na „Uložit QR kód do galerie“
+        a v nabídce zvol <em>Uložit obrázek</em> (iPhone) nebo Fotky / Galerii (Android). Případně na QR kódu podrž prst.
+        Pak ho v bankovní aplikaci načti z galerie (např. v Georgi u skenování QR kódu). Nebo údaje výše zkopíruj.</p>
 
       <div class="note">
         <p><strong>Variabilní symbol <span id="pVs2"></span> je jen tvůj.</strong> Podle něj spárujeme platbu s tvým jménem.</p>
@@ -1205,6 +1206,7 @@ const CONFIG = {
     ctx.fillText(fmtKc(state.qty * CONFIG.PRICE) + '  ·  VS ' + VS, size/2, size + 22);
     ctx.font = '20px system-ui,Arial,sans-serif'; ctx.fillStyle = '#666';
     ctx.fillText('Psychopařba – vstupenky', size/2, size + 52);
+    $('qrImg').src = canvas.toDataURL('image/png');
   }
 
   /* --- stav a UI --- */
@@ -1294,13 +1296,22 @@ const CONFIG = {
     setTimeout(() => { btn.textContent = 'Kopírovat'; btn.classList.remove('done'); }, 1600);
   }));
 
-  /* uložení QR jako PNG */
+  /* uložení QR: na mobilu přes sdílení (→ Uložit obrázek / Fotky), jinak stažení */
   $('dl').addEventListener('click', () => {
-    const c = $('qrCanvas');
-    const save = url => { const a = document.createElement('a'); a.href = url;
-      a.download = `psychoparba-platba-${VS}.png`; document.body.appendChild(a); a.click(); a.remove(); };
-    if(c.toBlob) c.toBlob(b => { const u = URL.createObjectURL(b); save(u); setTimeout(()=>URL.revokeObjectURL(u), 4000); }, 'image/png');
-    else save(c.toDataURL('image/png'));
+    const c = $('qrCanvas'), fname = `psychoparba-platba-${VS}.png`;
+    const download = url => { const a = document.createElement('a'); a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click(); a.remove(); };
+    if(!c.toBlob){ download(c.toDataURL('image/png')); return; }
+    c.toBlob(async blob => {
+      try{
+        const file = new File([blob], fname, {type:'image/png'});
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:'QR platba – Psychopařba'});
+          return;
+        }
+      }catch(err){ if(err && err.name === 'AbortError') return; }   // uživatel sdílení zavřel
+      const u = URL.createObjectURL(blob); download(u); setTimeout(() => URL.revokeObjectURL(u), 4000);
+    }, 'image/png');
   });
 
   /* plovoucí tlačítko zmizí, jakmile je formulář nebo platba na obrazovce */
