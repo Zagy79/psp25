@@ -179,7 +179,6 @@
 
       <div class="closed" id="closed" hidden>
         <p><strong>Online prodej vstupenek skončil.</strong></p>
-        <p>Dotazy piš na <a class="js-mail"></a>.</p>
       </div>
     </section>
 
@@ -201,7 +200,7 @@
       </details>
 
       <div class="note">
-        <p>Tvůj VS <strong id="pVs2"></strong> – pro jistotu si udělej screenshot. Problém s platbou? <a class="js-mail"></a></p>
+        <p>Tvůj VS <strong id="pVs2"></strong> – pro jistotu si udělej screenshot.</p>
       </div>
       <p class="status" id="status" aria-live="polite"></p>
     </section>
@@ -1131,7 +1130,6 @@ const CONFIG = {
   MAX_QTY: 10,
   VS_PREFIX: '26',              // VS = prefix + náhodné číslice (celkem 10)
   SALES_END: '2026-11-26T23:59:59+01:00',  // uzávěrka prodeje (+01:00 = zimní čas)
-  CONTACT: 'info@ps.cz',
   SHEET_URL: 'https://script.google.com/macros/s/AKfycby2r_dXBIFbtthSRyCx_EKhGoUBxYzU0WtZLAVqb3WP0AOdAFfLx8Fm_l0BUovUQyL5HQ/exec'                 // adresa Apps Script webové aplikace (…/exec); prázdné = nezapisuje se
 };
 /* ======================================================= */
@@ -1141,7 +1139,6 @@ const CONFIG = {
   const $ = id => document.getElementById(id);
 
   document.querySelectorAll('.js-price').forEach(el => el.textContent = CONFIG.PRICE);
-  document.querySelectorAll('.js-mail').forEach(a => { a.href = 'mailto:' + CONFIG.CONTACT; a.textContent = CONFIG.CONTACT; });
   const END = new Date(CONFIG.SALES_END);
   document.querySelectorAll('.js-end').forEach(el => el.textContent =
     END.toLocaleDateString('cs-CZ', {day:'numeric', month:'numeric', year:'numeric', timeZone:'Europe/Prague'}));
@@ -1253,7 +1250,7 @@ const CONFIG = {
       else if(data.error === 'closed'){ closeSales(); }
       else throw new Error(data.error);
     }catch(err){
-      setStatus('Objednávku se nepodařilo uložit. Zaplatit můžeš i tak – pro jistotu nám ale napiš na ' + CONFIG.CONTACT + '.', 'err');
+      setStatus('Objednávku se nepodařilo uložit. Zaplatit můžeš i tak – platbu spárujeme podle VS a jména.', 'err');
     }
   }
   const sendLater = () => { clearTimeout(sendTimer); sendTimer = setTimeout(sendOrder, 1500); };
